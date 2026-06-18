@@ -160,6 +160,129 @@ namespace MR
 
             main_box->addWidget (tractogram_list_view, 1);
 
+            QGroupBox* navigation_groupbox = new QGroupBox ("Target tracks");
+            GridLayout* navigation_grid = new GridLayout;
+
+            navigation_groupbox->setLayout (navigation_grid);
+
+            QPushButton *target_current_track = new QPushButton("Target current track");
+            navigation_grid->addWidget(target_current_track, 0, 0, 1, 2);
+            connect (target_current_track, SIGNAL (clicked (bool)), this, SLOT (on_target_current_track_slot (bool)));
+
+            navigation_grid->addWidget (new QLabel ("Box size"), 0, 2, Qt::AlignRight);
+            size_entry = new QDoubleSpinBox (this);
+            size_entry->setSingleStep(0.1);
+            size_entry->setMinimum(2.0);
+            size_entry->setDecimals(1);
+            size_entry->setAlignment(Qt::AlignCenter);
+            size_entry->setStyleSheet(R"(
+                QDoubleSpinBox {
+                    padding-left: 0px;
+                    padding-right: 30px;
+                }
+            )");
+            navigation_grid->addWidget(size_entry, 0, 3);
+
+            navigation_grid->setRowMinimumHeight(1, 12);
+
+            navigation_grid->addWidget (new QLabel ("R"), 2, 1, Qt::AlignCenter);
+            navigation_grid->addWidget (new QLabel ("A"), 2, 2, Qt::AlignCenter);
+            navigation_grid->addWidget (new QLabel ("S"), 2, 3, Qt::AlignCenter);
+
+            left_check = new QCheckBox("Left");
+            navigation_grid->addWidget (left_check, 3, 0);
+            connect (left_check, SIGNAL (stateChanged (int)), this, SLOT (on_target_check_slot (int)));
+
+            left_R_entry = new QDoubleSpinBox (this);
+            left_R_entry->setSingleStep(0.5);
+            left_R_entry->setMinimum(-1000);
+            left_R_entry->setDecimals(1);
+            left_R_entry->setAlignment(Qt::AlignCenter);
+            left_R_entry->setStyleSheet(R"(
+                QDoubleSpinBox {
+                    padding-left: 0px;
+                    padding-right: 30px;
+                }
+            )");
+            navigation_grid->addWidget(left_R_entry, 3, 1, Qt::AlignCenter);
+            connect (left_R_entry, SIGNAL (valueChanged (double)), this, SLOT (on_target_coordinates_slot (double)));
+
+            left_A_entry = new QDoubleSpinBox (this);
+            left_A_entry->setSingleStep(0.5);
+            left_A_entry->setMinimum(-1000);
+            left_A_entry->setDecimals(1);
+            left_A_entry->setAlignment(Qt::AlignCenter);
+            left_A_entry->setStyleSheet(R"(
+                QDoubleSpinBox {
+                    padding-left: 0px;
+                    padding-right: 30px;
+                }
+            )");
+            navigation_grid->addWidget(left_A_entry, 3, 2, Qt::AlignCenter);
+            connect (left_A_entry, SIGNAL (valueChanged (double)), this, SLOT (on_target_coordinates_slot (double)));
+
+            left_S_entry = new QDoubleSpinBox (this);
+            left_S_entry->setSingleStep(0.5);
+            left_S_entry->setMinimum(-1000);
+            left_S_entry->setDecimals(1);
+            left_S_entry->setAlignment(Qt::AlignCenter);
+            left_S_entry->setStyleSheet(R"(
+                QDoubleSpinBox {
+                    padding-left: 0px;
+                    padding-right: 30px;
+                }
+            )");
+            navigation_grid->addWidget(left_S_entry, 3, 3, Qt::AlignCenter);
+            connect (left_S_entry, SIGNAL (valueChanged (double)), this, SLOT (on_target_coordinates_slot (double)));
+
+            right_check = new QCheckBox("Right");
+            navigation_grid->addWidget (right_check, 4, 0);
+            connect (right_check, SIGNAL (stateChanged (int)), this, SLOT (on_target_check_slot (int)));
+
+            right_R_entry = new QDoubleSpinBox (this);
+            right_R_entry->setSingleStep(0.5);
+            right_R_entry->setMinimum(-1000);
+            right_R_entry->setDecimals(1);
+            right_R_entry->setAlignment(Qt::AlignCenter);
+            right_R_entry->setStyleSheet(R"(
+                QDoubleSpinBox {
+                    padding-left: 0px;
+                    padding-right: 30px;
+                }
+            )");
+            navigation_grid->addWidget(right_R_entry, 4, 1, Qt::AlignCenter);
+            connect (right_R_entry, SIGNAL (valueChanged (double)), this, SLOT (on_target_coordinates_slot (double)));
+
+            right_A_entry = new QDoubleSpinBox (this);
+            right_A_entry->setSingleStep(0.5);
+            right_A_entry->setMinimum(-1000);
+            right_A_entry->setDecimals(1);
+            right_A_entry->setAlignment(Qt::AlignCenter);
+            right_A_entry->setStyleSheet(R"(
+                QDoubleSpinBox {
+                    padding-left: 0px;
+                    padding-right: 30px;
+                }
+            )");
+            navigation_grid->addWidget(right_A_entry, 4, 2, Qt::AlignCenter);
+            connect (right_A_entry, SIGNAL (valueChanged (double)), this, SLOT (on_target_coordinates_slot (double)));
+
+            right_S_entry = new QDoubleSpinBox (this);
+            right_S_entry->setSingleStep(0.5);
+            right_S_entry->setMinimum(-1000);
+            right_S_entry->setDecimals(1);
+            right_S_entry->setAlignment(Qt::AlignCenter);
+            right_S_entry->setStyleSheet(R"(
+                QDoubleSpinBox {
+                    padding-left: 0px;
+                    padding-right: 30px;
+                }
+            )");
+            navigation_grid->addWidget(right_S_entry, 4, 3, Qt::AlignCenter);
+            connect (right_S_entry, SIGNAL (valueChanged (double)), this, SLOT (on_target_coordinates_slot (double)));
+
+            main_box->addWidget (navigation_groupbox, 0);
+
             hlayout = new HBoxLayout;
             hlayout->setContentsMargins (0, 0, 0, 0);
             hlayout->setSpacing (0);
@@ -268,119 +391,6 @@ namespace MR
             lighting->diffuse = 0.8;
             lighting->shine = 5.0;
             connect (lighting, SIGNAL (changed()), SLOT (hide_all_slot()));
-
-            QGroupBox* navigation_groupbox = new QGroupBox ("Target tracks");
-            GridLayout* navigation_grid = new GridLayout;
-
-            navigation_groupbox->setLayout (navigation_grid);
-
-            navigation_grid->addWidget (new QLabel ("Box size"), 0, 0);
-            QDoubleSpinBox* size_entry = new QDoubleSpinBox (this);
-            size_entry->setSingleStep(0.1);
-            size_entry->setMinimum(2.0);
-            size_entry->setValue(2.5);
-            size_entry->setDecimals(1);
-            size_entry->setAlignment(Qt::AlignCenter);
-            size_entry->setStyleSheet(R"(
-                QDoubleSpinBox {
-                    padding-left: 0px;
-                    padding-right: 30px;
-                }
-            )");
-            navigation_grid->addWidget(size_entry, 0, 1);
-
-            navigation_grid->setRowMinimumHeight(1, 12);
-
-            navigation_grid->addWidget (new QLabel ("R"), 2, 1, Qt::AlignCenter);
-            navigation_grid->addWidget (new QLabel ("A"), 2, 2, Qt::AlignCenter);
-            navigation_grid->addWidget (new QLabel ("S"), 2, 3, Qt::AlignCenter);
-
-            QCheckBox *left_check = new QCheckBox("Left");
-            navigation_grid->addWidget (left_check, 3, 0);
-
-            QDoubleSpinBox* left_R_entry = new QDoubleSpinBox (this);
-            left_R_entry->setSingleStep(0.1);
-            left_R_entry->setMinimum(-1000);
-            left_R_entry->setDecimals(1);
-            left_R_entry->setAlignment(Qt::AlignCenter);
-            left_R_entry->setStyleSheet(R"(
-                QDoubleSpinBox {
-                    padding-left: 0px;
-                    padding-right: 30px;
-                }
-            )");
-            navigation_grid->addWidget(left_R_entry, 3, 1, Qt::AlignCenter);
-
-            QDoubleSpinBox* left_A_entry = new QDoubleSpinBox (this);
-            left_A_entry->setSingleStep(0.1);
-            left_A_entry->setMinimum(-1000);
-            left_A_entry->setDecimals(1);
-            left_A_entry->setAlignment(Qt::AlignCenter);
-            left_A_entry->setStyleSheet(R"(
-                QDoubleSpinBox {
-                    padding-left: 0px;
-                    padding-right: 30px;
-                }
-            )");
-            navigation_grid->addWidget(left_A_entry, 3, 2, Qt::AlignCenter);
-
-            QDoubleSpinBox* left_S_entry = new QDoubleSpinBox (this);
-            left_S_entry->setSingleStep(0.1);
-            left_S_entry->setMinimum(-1000);
-            left_S_entry->setDecimals(1);
-            left_S_entry->setAlignment(Qt::AlignCenter);
-            left_S_entry->setStyleSheet(R"(
-                QDoubleSpinBox {
-                    padding-left: 0px;
-                    padding-right: 30px;
-                }
-            )");
-            navigation_grid->addWidget(left_S_entry, 3, 3, Qt::AlignCenter);
-
-            QCheckBox *right_check = new QCheckBox("Right");
-            navigation_grid->addWidget (right_check, 4, 0);
-
-            QDoubleSpinBox* right_R_entry = new QDoubleSpinBox (this);
-            right_R_entry->setSingleStep(0.1);
-            right_R_entry->setMinimum(-1000);
-            right_R_entry->setDecimals(1);
-            right_R_entry->setAlignment(Qt::AlignCenter);
-            right_R_entry->setStyleSheet(R"(
-                QDoubleSpinBox {
-                    padding-left: 0px;
-                    padding-right: 30px;
-                }
-            )");
-            navigation_grid->addWidget(right_R_entry, 4, 1, Qt::AlignCenter);
-
-            QDoubleSpinBox* right_A_entry = new QDoubleSpinBox (this);
-            right_A_entry->setSingleStep(0.1);
-            right_A_entry->setMinimum(-1000);
-            right_A_entry->setDecimals(1);
-            right_A_entry->setAlignment(Qt::AlignCenter);
-            right_A_entry->setStyleSheet(R"(
-                QDoubleSpinBox {
-                    padding-left: 0px;
-                    padding-right: 30px;
-                }
-            )");
-            navigation_grid->addWidget(right_A_entry, 4, 2, Qt::AlignCenter);
-
-            QDoubleSpinBox* right_S_entry = new QDoubleSpinBox (this);
-            right_S_entry->setSingleStep(0.1);
-            right_S_entry->setMinimum(-1000);
-            right_S_entry->setDecimals(1);
-            right_S_entry->setAlignment(Qt::AlignCenter);
-            right_S_entry->setStyleSheet(R"(
-                QDoubleSpinBox {
-                    padding-left: 0px;
-                    padding-right: 30px;
-                }
-            )");
-            navigation_grid->addWidget(right_S_entry, 4, 3, Qt::AlignCenter);
-
-            main_box->addWidget (navigation_groupbox, 0);
-
 
             QAction* action;
             track_option_menu = new QMenu ();
