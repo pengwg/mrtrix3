@@ -95,6 +95,9 @@ namespace MR
             void colour_button_slot();
             void geom_type_selection_slot (int);
             void selection_changed_slot (const QItemSelection &, const QItemSelection &);
+            void on_target_check_slot(int);
+            void on_target_coordinates_slot(double);
+            void on_target_current_track_slot(bool);
 
           protected:
             AdjustButton* slab_entry;
@@ -116,6 +119,19 @@ namespace MR
             QPushButton* lighting_button;
 
             QSlider* opacity_slider;
+
+            QDoubleSpinBox* size_entry;
+            QCheckBox *left_check;
+            QDoubleSpinBox* left_R_entry;
+            QDoubleSpinBox* left_A_entry;
+            QDoubleSpinBox* left_S_entry;
+            QModelIndex left_target_index;
+
+            QCheckBox *right_check;
+            QDoubleSpinBox* right_R_entry;
+            QDoubleSpinBox* right_A_entry;
+            QDoubleSpinBox* right_S_entry;
+            QModelIndex right_target_index;
 
             void dropEvent (QDropEvent* event) override;
             void update_scalar_options();

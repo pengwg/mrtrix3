@@ -932,11 +932,101 @@ namespace MR
 
         }
 
+        void Tractography::on_target_current_track_slot (bool)
+        {
+            // Capture track info from file names following the pattern: Left_R-9.3_A2.8_S-0.3_r2.5.tck
+            QString filename = tractogram_list_view->currentIndex().data(Qt::DisplayRole).toString();
+            QRegularExpression rx(
+                R"(R(?<R>-?\d+(\.\d+)?)_A(?<A>-?\d+(\.\d+)?)_S(?<S>-?\d+(\.\d+)?)_r(?<r>-?\d+(\.\d+)?))"
+                );
+            auto m = rx.match(filename);
 
+            if (m.hasMatch()) {
+                float R = m.captured("R").toFloat();
+                float A = m.captured("A").toFloat();
+                float S = m.captured("S").toFloat();
+                float r = m.captured("r").toFloat();
 
+                size_entry->setValue(2 * r);
 
+                if (R > 0) {
+                    right_R_entry->setValue(R);
+                    right_A_entry->setValue(A);
+                    right_S_entry->setValue(S);
+                    right_target_index = tractogram_list_view->currentIndex();
+                    right_check->setChecked(true);
+                }
+                else {
+                    left_R_entry->setValue(R);
+                    left_A_entry->setValue(A);
+                    left_S_entry->setValue(S);
+                    left_target_index = tractogram_list_view->currentIndex();
+                    left_check->setChecked(true);
+                }
+            }
 
+        }
 
+        void Tractography::on_target_check_slot (int state)
+        {
+            for (int i = 0, N = tractogram_list_model->rowCount(); i < N; ++i) {
+                tractogram_list_model->setData(tractogram_list_model->index(i, 0),
+                                               Qt::Unchecked,
+                                               Qt::CheckStateRole);
+            }
+
+            if (left_target_index.isValid()) {
+                tractogram_list_model->setData(left_target_index,
+                                               left_check->checkState(),
+                                               Qt::CheckStateRole);
+            }
+            if (right_target_index.isValid()) {
+                tractogram_list_model->setData(right_target_index,
+                                               right_check->checkState(),
+                                               Qt::CheckStateRole);
+            }
+
+            window().updateGL();
+        }
+
+        void Tractography::on_target_coordinates_slot(double)
+        {
+            QString left_match_name = QString("Left_R%1_A%2_S%3_r%4.tck")
+                                     .arg(left_R_entry->value(), 0, 'f', 1)
+                                     .arg(left_A_entry->value(), 0, 'f', 1)
+                                     .arg(left_S_entry->value(), 0, 'f', 1)
+                                     .arg(2.5, 0, 'f', 1);
+
+            QString right_match_name = QString("Right_R%1_A%2_S%3_r%4.tck")
+                                          .arg(right_R_entry->value(), 0, 'f', 1)
+                                          .arg(right_A_entry->value(), 0, 'f', 1)
+                                          .arg(right_S_entry->value(), 0, 'f', 1)
+                                          .arg(2.5, 0, 'f', 1);
+
+            for (int i = 0, N = tractogram_list_model->rowCount(); i < N; ++i) {
+                auto index = tractogram_list_model->index(i, 0);
+
+                QString filename = QFileInfo(index.data(Qt::DisplayRole).toString()).fileName();
+
+                if (filename == left_match_name) {
+                    if (left_target_index.isValid()) {
+                        tractogram_list_model->setData(left_target_index, Qt::Unchecked, Qt::CheckStateRole);
+                    }
+                    tractogram_list_model->setData(index, left_check->checkState(), Qt::CheckStateRole);
+                    left_target_index = index;
+                }
+
+                if (filename == right_match_name) {
+                    if (right_target_index.isValid()) {
+                        tractogram_list_model->setData(right_target_index, Qt::Unchecked, Qt::CheckStateRole);
+                    }
+                    tractogram_list_model->setData(index, right_check->checkState(), Qt::CheckStateRole);
+                    right_target_index = index;
+                }
+            }
+
+            window().updateGL();
+        }
 
         void Tractography::add_commandline_options (MR::App::OptionList& options)
         {
